@@ -113,6 +113,8 @@ bool io_init()
 		}
 	}
 
+	//
+
 	return true;
 }
 
@@ -125,11 +127,8 @@ void io_quit()
 
 static button_t update_button(button_t button, bool touch)
 {
-	assert(button > button_invalid);
-	assert(button < button_limit);
-
 	switch (button) {
-	case button_untouched: return touch ? button_pressed : button_released;
+	case button_untouched: return touch ? button_pressed : button_untouched;
 	case button_pressed: return touch ? button_held : button_released;
 	case button_held: return touch ? button_held : button_released;
 	case button_released: return touch ? button_pressed : button_untouched;
@@ -142,13 +141,24 @@ bool io_sync_input(input_t* input)
 {
 	SDL_Event event;
 
+	//
+
 	const int start_idx = 0;
 	const int a_idx = 1;
 	const int b_idx = 2;
 	bool touches[3] = { false, false, false };
 
+	//
 
-	input->dir = dir_invalid;	
+	bool dir_touches[dir_limit];
+	for (int i = 0; i < dir_limit; i++) {
+		dir_touches[i] = false;
+	}
+
+	//
+
+	Uint8 *key_state = SDL_GetKeyState(NULL);
+
 	while(SDL_PollEvent(&event)) {
 		switch(event.type) {
 		case SDL_QUIT: return true;
@@ -158,10 +168,6 @@ bool io_sync_input(input_t* input)
 			}
 			
 			switch (event.key.keysym.sym) {
-			case SDLK_UP: input->dir = dir_up; break;
-			case SDLK_LEFT: input->dir = dir_left; break;
-			case SDLK_RIGHT: input->dir = dir_right; break;
-			case SDLK_DOWN: input->dir = dir_down; break;
 			case SDLK_RETURN: touches[start_idx] = true; break;
 			case SDLK_LCTRL: touches[a_idx] = true; break;
 			case SDLK_LALT: touches[b_idx] = true; break;
@@ -173,6 +179,32 @@ bool io_sync_input(input_t* input)
 		default: break;
 		}
 	}
+
+	//
+
+	dir_touches[dir_left] = key_state[SDLK_LEFT];
+	dir_touches[dir_right] = key_state[SDLK_RIGHT];
+	dir_touches[dir_up] = key_state[SDLK_UP];
+	dir_touches[dir_down] = key_state[SDLK_DOWN];
+
+	bool dir_touch = false;
+	dir_t prev_dir = input->dir;
+
+	for (int i = 0; i < dir_limit; i++) {
+		if (dir_touches[i]) {
+			input->dir = i;
+			dir_touch = true;
+			break;
+		}
+	}	
+
+	if (prev_dir == input->dir) {
+		input->dir_state = update_button(input->dir_state, dir_touch);
+	} else {
+		input->dir_state = button_pressed;
+	}
+
+	//
 
 	input->start = update_button(input->start, touches[start_idx]);
 	input->a = update_button(input->a, touches[a_idx]);
@@ -269,10 +301,8 @@ void io_draw_skane(const skane_t* skane)
 	default: assert(false); break;
 	}
 
-
-
 	SDL_Flip(screen);
-	SDL_Delay(20);
+	SDL_Delay(1000 / FPS);
 }
 
 

@@ -6,6 +6,7 @@
 
 int main()
 {
+	input_t input;
 	skane_t skane;
 
 	// Initialize.
@@ -14,14 +15,14 @@ int main()
 			return EXIT_FAILURE;
 		}
 		
-		skane.state = skane_state_menu;
-		skane.menu.index = menu_index_play;
+		input_init(&input);
+
+		skane_init(&skane);
 	}
 
 	// The main loop.
 	bool quit = false;
 	while (!quit) {
-		input_t input;
 		quit |= io_sync_input(&input);
 
 		// Step skane logic.

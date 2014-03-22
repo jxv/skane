@@ -4,6 +4,19 @@
 //--
 
 
+void input_init(input_t* input)
+{
+	input->dir = dir_up;
+	input->dir_state = button_untouched;
+	input->start = button_untouched;
+	input->a = button_untouched;
+	input->b = button_untouched;
+}
+
+
+//
+
+
 static void game_init_food(food_t*);
 static void game_init_snake(snake_t*);
 
@@ -53,6 +66,15 @@ static void game_init_snake(snake_t* snake)
 //
 
 
+void skane_init(skane_t* skane)
+{
+	skane->prev_state = skane_state_menu;
+	skane->state = skane_state_menu;
+	skane->next_state = skane_state_menu;
+	skane->menu.index = menu_index_play;
+}
+
+
 static bool skane_step_game(const input_t*, game_t*);
 
 
@@ -66,10 +88,13 @@ bool skane_step(const input_t* input, skane_t* skane)
 	case skane_state_menu: {
 		menu_t* menu = &skane->menu;
 		int move = menu_index_limit;
-		switch (input->dir) {
-		case dir_up: move--; break;
-		case dir_down: move++; break;
-		default: break;
+
+		if (input->dir_state == button_pressed) {
+			switch (input->dir) {
+			case dir_up: move--; break;
+			case dir_down: move++; break;
+			default: break;
+			}
 		}
 		menu->index += move;
 		menu->index %= menu_index_limit;
@@ -97,16 +122,19 @@ bool skane_step(const input_t* input, skane_t* skane)
 		if (skane_step_game(input, &skane->game)) {
 			skane->next_state = skane_state_menu;
 		}
-		return false;
+
+		//
 
 		return false;
 	}
 	case skane_state_high_score: {
+
+		//
+
 		return false;
 	}
-	default: break;
+	default: assert(false); break;
 	}
-	assert(false);
 }
 
 
@@ -168,6 +196,10 @@ static bool skane_step_game(const input_t* input, game_t* game)
 		//
 
 		do {
+			if (!(input->dir_state == button_held || input->dir_state == button_pressed)) {
+				break;
+			}
+
 			int horz;
 			int vert;
 			step_dir(input->dir, &horz, &vert);
@@ -180,7 +212,7 @@ static bool skane_step_game(const input_t* input, game_t* game)
 			if (next_coor.x < 0 || next_coor.x >= MAP_W || next_coor.y < 0 || next_coor.y >= MAP_H) {
 				break;
 			}
-
+			
 			food->coor = next_coor;
 		} while (false);
 		

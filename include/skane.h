@@ -18,6 +18,7 @@
 #define FPS 60
 #define SPF (1.0f / (float)FPS)
 
+
 //--
 
 
@@ -119,6 +120,7 @@ typedef struct skane {
 
 typedef struct input {
 	dir_t dir;
+	button_t dir_state;
 	button_t start;
 	button_t a;
 	button_t b;
@@ -126,7 +128,6 @@ typedef struct input {
 
 
 //--
-
 
 bool io_init();
 void io_quit();
@@ -136,7 +137,8 @@ void io_draw_skane(const skane_t*);
 
 //
 
-
+void input_init(input_t*);
+void skane_init(skane_t*);
 bool skane_step(const input_t*, skane_t*);
 
 
