@@ -110,6 +110,13 @@ bool skane_step(const input_t* input, skane_t* skane)
 }
 
 
+static void step_dir(dir_t dir, int* horz, int* vert)
+{
+	*horz = dir == dir_left ? -1 : (dir == dir_right ? 1 : 0);
+	*vert = dir == dir_up ? -1 : (dir == dir_down ? 1 : 0);
+}
+
+
 static bool skane_step_game(const input_t* input, game_t* game)
 {
 	game->prev_state = game->state;
@@ -118,7 +125,9 @@ static bool skane_step_game(const input_t* input, game_t* game)
 	//
 
 	snake_t* snake = &game->snake;
-	//food_t* food = &game->food;
+	food_t* food = &game->food;
+	
+	//
 
 	switch (game->state) {
 	case game_state_start: {
@@ -133,23 +142,48 @@ static bool skane_step_game(const input_t* input, game_t* game)
 	case game_state_play: {
 		game->ticks += SPF;
 
-		dir_t dir = snake->dir;
-		int horz = dir == dir_left ? -1 : (dir == dir_right ? 1 : 0);
-		int vert = dir == dir_up ? -1 : (dir == dir_down ? 1 : 0);
+		//
+
+		do {
+			int horz;
+			int vert;
+			step_dir(snake->dir, &horz, &vert);
 		
-		coor_t next_coor = {
-			.x = snake->body[snake->head].x + horz,
-			.y = snake->body[snake->head].y + vert,
-		};
+			coor_t next_coor = {
+				.x = snake->body[snake->head].x + horz,
+				.y = snake->body[snake->head].y + vert,
+			};
 
-		if (next_coor.x < 0 || next_coor.x >= MAP_W || next_coor.y < 0 || next_coor.y >= MAP_H) {
-			return false;
-		}
+			if (next_coor.x < 0 || next_coor.x >= MAP_W || next_coor.y < 0 || next_coor.y >= MAP_H) {
+				break;
+			}
 
-		snake->head += -1 + SNAKE_BODY_LEN;
-		snake->head %= SNAKE_BODY_LEN;
+			snake->head += -1 + SNAKE_BODY_LEN;
+			snake->head %= SNAKE_BODY_LEN;
 
-		snake->body[snake->head] = next_coor;
+			snake->body[snake->head] = next_coor;
+
+		} while (false);
+
+		//
+
+		do {
+			int horz;
+			int vert;
+			step_dir(input->dir, &horz, &vert);
+		
+			coor_t next_coor = {
+				.x = food->coor.x + horz,
+				.y = food->coor.y + vert,
+			};
+
+			if (next_coor.x < 0 || next_coor.x >= MAP_W || next_coor.y < 0 || next_coor.y >= MAP_H) {
+				break;
+			}
+
+			food->coor = next_coor;
+		} while (false);
+		
 		break;
 	}
 	case game_state_pause: {

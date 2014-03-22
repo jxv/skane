@@ -196,6 +196,7 @@ static void io_draw_menu(const menu_t* menu)
 static void io_draw_game_play(const game_t* game)
 {
 	const snake_t* snake = &game->snake;
+	const food_t* food = &game->food; 
 
 	for (int idx = snake->head, len = 0;
 			len < snake->length;
@@ -208,6 +209,16 @@ static void io_draw_game_play(const game_t* game)
 		};
 		SDL_FillRect(screen, &rect, SDL_MapRGB(screen->format, 0xff, 0xff, 0xff));
 	}
+
+	//	
+
+	SDL_Rect rect = {
+		.x = food->coor.x,
+		.y = food->coor.y,
+		.w = 1,
+		.h = 1
+	};
+	SDL_FillRect(screen, &rect, SDL_MapRGB(screen->format, 0xff, 0x00, 0x00));
 }
 
 

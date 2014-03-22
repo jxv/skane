@@ -14,8 +14,8 @@ int main()
 			return EXIT_FAILURE;
 		}
 		
-		skane.skane_state = skane_state_menu;
-		skane.menu.menu_index = menu_index_play;
+		skane.state = skane_state_menu;
+		skane.menu.index = menu_index_play;
 	}
 
 	// The main loop.
