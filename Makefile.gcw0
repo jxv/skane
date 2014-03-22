@@ -1,14 +1,15 @@
 CC := mipsel-gcw0-linux-uclibc-cc
+SYSROOT := $(shell $(CC) --print-sysroot)
 
 CFLAGS := -std=c11
 CFLAGS += -Werror
 CFLAGS += -Wall
 CFLAGS += -pedantic
-CFLAGS += $(shell sdl-config --cflags)
+CFLAGS += `$(SYSROOT)/usr/bin/sdl-config --cflags`
 
 INCLUDE := -I ./include
 
-LIB := $(shell sdl-config --libs)
+LIB := `$(SYSROOT)/usr/bin/sdl-config --libs`
 LIB += -lSDL_image
 
 SRC := $(wildcard src/*.c)
