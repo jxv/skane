@@ -8,6 +8,7 @@ CFLAGS += $(shell sdl-config --cflags)
 INCLUDE := -I ./include
 
 LIB := $(shell sdl-config --libs)
+LIB += -lSDL_image
 
 SRC := $(wildcard src/*.c)
 

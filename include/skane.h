@@ -76,6 +76,7 @@ typedef struct coor {
 
 
 typedef struct snake {
+	dir_t dir;
 	int head;
 	int length;
 	coor_t body[MAP_W * MAP_H];
@@ -93,6 +94,7 @@ typedef struct game {
 	food_t food;
 	snake_t snake;
 	float die_ticks;
+	float count_down_ticks;
 } game_t;
 
 
@@ -105,6 +107,7 @@ typedef struct skane {
 	skane_state_t skane_state;
 	menu_t menu;
 	game_t game;
+	int high_score;
 } skane_t;
 
 
@@ -122,7 +125,7 @@ typedef struct input {
 bool io_init();
 void io_quit();
 bool io_sync_input(input_t*);
-void io_draw_skane(skane_t*);
+void io_draw_skane(const skane_t*);
 
 
 //
