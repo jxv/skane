@@ -125,16 +125,16 @@ void io_quit()
 
 static button_t update_button(button_t button, bool touch)
 {
-	static const button_t next[button_limit][2] = {
-		[button_untouched] = {button_pressed, button_untouched},
-		[button_pressed] = {button_held, button_released},
-		[button_held] = {button_held, button_released},
-		[button_released] = {button_pressed, button_untouched},
-	};
-	
 	assert(button > button_invalid);
 	assert(button < button_limit);
-	return next[button][!!touch];
+
+	switch (button) {
+	case button_untouched: return touch ? button_pressed : button_released;
+	case button_pressed: return touch ? button_held : button_released;
+	case button_held: return touch ? button_held : button_released;
+	case button_released: return touch ? button_pressed : button_untouched;
+	default: assert(false); break;
+	}
 }
 
 
@@ -146,7 +146,9 @@ bool io_sync_input(input_t* input)
 	const int a_idx = 1;
 	const int b_idx = 2;
 	bool touches[3] = { false, false, false };
-	
+
+
+	input->dir = dir_invalid;	
 	while(SDL_PollEvent(&event)) {
 		switch(event.type) {
 		case SDL_QUIT: return true;

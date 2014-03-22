@@ -15,6 +15,7 @@ int main()
 		}
 		
 		skane.skane_state = skane_state_menu;
+		skane.menu.menu_index = menu_index_play;
 	}
 
 	// The main loop.
