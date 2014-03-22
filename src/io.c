@@ -142,61 +142,50 @@ bool io_sync_input(input_t* input)
 	SDL_Event event;
 
 	//
-
-	const int start_idx = 0;
-	const int a_idx = 1;
-	const int b_idx = 2;
-	bool touches[3] = { false, false, false };
-
-	//
-
-	bool dir_touches[dir_limit];
-	for (int i = 0; i < dir_limit; i++) {
-		dir_touches[i] = false;
-	}
-
-	//
-
-	Uint8 *key_state = SDL_GetKeyState(NULL);
-
+	
 	while(SDL_PollEvent(&event)) {
 		switch(event.type) {
 		case SDL_QUIT: return true;
-		case SDL_KEYDOWN: {
-			if (event.key.keysym.sym == SDLK_ESCAPE)  {
-				return true;
-			}
-			
-			switch (event.key.keysym.sym) {
-			case SDLK_RETURN: touches[start_idx] = true; break;
-			case SDLK_LCTRL: touches[a_idx] = true; break;
-			case SDLK_LALT: touches[b_idx] = true; break;
-			default: break;
-			}
-
-			break;
-		}
 		default: break;
 		}
 	}
 
 	//
+	
+	const int start_idx = 0;
+	const int a_idx = 1;
+	const int b_idx = 2;
+	bool touches[3] = { false, false, false };
+	bool dir_touches[dir_limit] = { false, false, false, false };
+	const Uint8* key_state = SDL_GetKeyState(NULL);
+
+	//
+
+	touches[start_idx] = key_state[SDLK_RETURN];
+	touches[a_idx] = key_state[SDLK_LCTRL];
+	touches[b_idx] = key_state[SDLK_LALT];
 
 	dir_touches[dir_left] = key_state[SDLK_LEFT];
 	dir_touches[dir_right] = key_state[SDLK_RIGHT];
 	dir_touches[dir_up] = key_state[SDLK_UP];
 	dir_touches[dir_down] = key_state[SDLK_DOWN];
 
-	bool dir_touch = false;
-	dir_t prev_dir = input->dir;
+	//
 
-	for (int i = 0; i < dir_limit; i++) {
-		if (dir_touches[i]) {
-			input->dir = i;
-			dir_touch = true;
-			break;
+	const dir_t prev_dir = input->dir;
+	bool dir_touch = false;
+
+	if (dir_touches[prev_dir]) {
+		dir_touch = true;
+	} else {
+		for (int i = 0; i < dir_limit; i++) {
+			if (dir_touches[i]) {
+				input->dir = i;
+				dir_touch = true;
+				break;
+			}
 		}
-	}	
+	}
 
 	if (prev_dir == input->dir) {
 		input->dir_state = update_button(input->dir_state, dir_touch);

@@ -22,7 +22,8 @@
 //--
 
 
-typedef enum dir {
+typedef enum dir
+{
 	dir_invalid = -1,
 	dir_left,
 	dir_right,
@@ -32,7 +33,8 @@ typedef enum dir {
 } dir_t;
 
 
-typedef enum button {
+typedef enum button
+{
 	button_invalid = -1,
 	button_untouched,
 	button_pressed,
@@ -42,7 +44,8 @@ typedef enum button {
 } button_t;
 
 
-typedef enum skane_state {
+typedef enum skane_state
+{
 	skane_state_invalid = -1,
 	skane_state_menu,
 	skane_state_game,
@@ -51,7 +54,8 @@ typedef enum skane_state {
 } skane_state_t;
 
 
-typedef enum menu_index {
+typedef enum menu_index
+{
 	menu_index_invalid = -1,
 	menu_index_play,
 	menu_index_high_score,
@@ -60,7 +64,8 @@ typedef enum menu_index {
 } menu_index_t;
 
 
-typedef enum game_state {
+typedef enum game_state
+{
 	game_state_invalid = -1,
 	game_state_start,
 	game_state_play,
@@ -73,13 +78,15 @@ typedef enum game_state {
 //
 
 
-typedef struct coor {
+typedef struct coor
+{
 	int x;
 	int y;
 } coor_t;
 
 
-typedef struct snake {
+typedef struct snake
+{
 	dir_t dir;
 	int head;
 	int length;
@@ -87,12 +94,14 @@ typedef struct snake {
 } snake_t;
 
 
-typedef struct food {
+typedef struct food
+{
 	coor_t coor;
 } food_t;
 
 
-typedef struct game {
+typedef struct game
+{
 	game_state_t state;
 	game_state_t next_state;
 	game_state_t prev_state;
@@ -103,12 +112,14 @@ typedef struct game {
 } game_t;
 
 
-typedef struct menu {
+typedef struct menu
+{
 	menu_index_t index;
 } menu_t;
 
 
-typedef struct skane {
+typedef struct skane
+{
 	skane_state_t state;
 	skane_state_t prev_state; 
 	skane_state_t next_state; 
@@ -118,7 +129,8 @@ typedef struct skane {
 } skane_t;
 
 
-typedef struct input {
+typedef struct input
+{
 	dir_t dir;
 	button_t dir_state;
 	button_t start;
@@ -129,11 +141,11 @@ typedef struct input {
 
 //--
 
+
 bool io_init();
 void io_quit();
 bool io_sync_input(input_t*);
 void io_draw_skane(const skane_t*);
-
 
 //
 
