@@ -1,11 +1,20 @@
+#include <SDL.h>
+#include <SDL_image.h>
+
+//
+
 #include "skane.h"
 
 
 //--
 
+static SDL_Surface* screen;
 
-void io_init()
+
+bool io_init()
 {
+	screen = NULL;
+	return true;
 }
 
 

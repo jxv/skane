@@ -3,14 +3,15 @@
 
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
 
 
 //--
 
 
-#define WORLD_WIDTH	320
-#define WORLD_HEIGHT	240
+#define MAP_W	320
+#define MAP_H	240
 
 
 //--
@@ -25,7 +26,20 @@ typedef enum dir {
 	dir_limit
 } dir_t;
 
+
+typedef enum game_state {
+	game_state_invalid = -1,
+	game_state_menu,
+	game_state_play,
+	game_state_pause,
+	game_state_die,
+	game_state_game_over,
+	game_state_limit
+} game_state_t;
+
+
 //
+
 
 typedef struct coor {
 	int x;
@@ -36,7 +50,7 @@ typedef struct coor {
 typedef struct snake {
 	int head;
 	int length;
-	coor_t body[WORLD_WIDTH * WORLD_HEIGHT];
+	coor_t body[MAP_W * MAP_H];
 } snake_t;
 
 
@@ -47,6 +61,7 @@ typedef struct food {
 
 
 typedef struct game {
+	game_state_t game_state;
 	food_t food;
 	snake_t snake;
 } game_t;
@@ -59,14 +74,13 @@ typedef struct input {
 
 //--
 
-void io_init();
+bool io_init();
 void io_quit();
 void io_sync_input(input_t*);
 void io_draw_game(game_t*);
 
 //
 
-void game_init(game_t*);
 bool game_step(const input_t*, game_t*);
 
 

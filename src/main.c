@@ -1,21 +1,37 @@
 #include "skane.h"
 
+
+//--
+
+
 int main()
 {
-	input_t input;
 	game_t game;
 
-	io_init();
-	game_init(&game);
+	// Initialize.
+	{
+		if (!io_init()) {
+			return EXIT_FAILURE;
+		}
+		
+		game.game_state = game_state_menu;
+	}
 
+	// The main loop.
 	bool quit = false;
-	do {
+	while (!quit) {
+		input_t input;
 		io_sync_input(&input);
-		quit |= game_step(&input, &game);
-		io_draw_game(&game);
-	} while (!quit);
 
+		// Step game logic.
+		quit |= game_step(&input, &game);
+
+		// Draw.
+		io_draw_game(&game);
+	}
+
+	// Quit.
 	io_quit();
 
-	return 0;
+	return EXIT_SUCCESS;
 }
