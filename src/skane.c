@@ -128,6 +128,11 @@ bool skane_step(const input_t* input, skane_t* skane)
 		return false;
 	}
 	case skane_state_high_score: {
+		if (input->b     == button_pressed ||
+		    input->a     == button_pressed ||
+		    input->start == button_pressed) {
+			skane->next_state = skane_state_menu;
+		}
 
 		//
 
