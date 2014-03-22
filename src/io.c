@@ -187,30 +187,52 @@ static void io_draw_menu(const menu_t* menu)
 	SDL_BlitSurface(menu_img, NULL, screen, NULL);
 
 	for (int i = 0; i < menu_index_limit; i++) {
-		SDL_BlitSurface(menu_index_img[i][menu->menu_index == i], NULL, screen, NULL);
+		SDL_BlitSurface(menu_index_img[i][menu->index == i], NULL, screen, NULL);
+	}
+}
+
+
+
+static void io_draw_game_play(const game_t* game)
+{
+	const snake_t* snake = &game->snake;
+
+	for (int idx = snake->head, len = 0;
+			len < snake->length;
+			idx += 1 + SNAKE_BODY_LEN, idx %= SNAKE_BODY_LEN, len++) {
+		SDL_Rect rect = {
+			.x = snake->body[idx].x,
+			.y = snake->body[idx].y,
+			.w = 1,
+			.h = 1
+		};
+		SDL_FillRect(screen, &rect, SDL_MapRGB(screen->format, 0xff, 0xff, 0xff));
 	}
 }
 
 
 static void io_draw_game(const game_t* game)
 {
-	switch (game->game_state) {
+	switch (game->state) {
 	case game_state_start: {
+		io_draw_game_play(game);
 		SDL_BlitSurface(ready_img, NULL, screen, NULL);
 		break;
 	}
 	case game_state_play: {
-		
-		if (game->count_down_ticks > 1.0f) {
+		io_draw_game_play(game);
+		if (game->ticks <= 1.0f) {
 			SDL_BlitSurface(go_img, NULL, screen, NULL);
 		}
 		break;
 	}
 	case game_state_pause: {
+		io_draw_game_play(game);
 		SDL_BlitSurface(pause_img, NULL, screen, NULL);
 		break;
 	}
 	case game_state_game_over: {
+		io_draw_game_play(game);
 		SDL_BlitSurface(game_over_img, NULL, screen, NULL);
 		break;
 	}
@@ -229,17 +251,14 @@ void io_draw_skane(const skane_t* skane)
 {
 	SDL_FillRect(screen, NULL, 0);
 
-	switch (skane->skane_state) {
+	switch (skane->state) {
 	case skane_state_menu: io_draw_menu(&skane->menu); break;
 	case skane_state_game: io_draw_game(&skane->game); break;
 	case skane_state_high_score: io_draw_high_score(skane->high_score); break;
 	default: assert(false); break;
 	}
 
-/*
-	SDL_Rect rect = {.x = 10, .y = 10, .w = 100, .h = 100};
-	SDL_FillRect(screen, &rect, SDL_MapRGB(screen->format, 0xff, 0xff, 0x00));
-*/
+
 
 	SDL_Flip(screen);
 	SDL_Delay(20);

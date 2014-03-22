@@ -13,7 +13,10 @@
 
 #define MAP_W	320
 #define MAP_H	240
+#define SNAKE_BODY_LEN (MAP_H*2)
 
+#define FPS 60
+#define SPF (1.0f / (float)FPS)
 
 //--
 
@@ -79,32 +82,35 @@ typedef struct snake {
 	dir_t dir;
 	int head;
 	int length;
-	coor_t body[MAP_W * MAP_H];
+	coor_t body[SNAKE_BODY_LEN];
 } snake_t;
 
 
 typedef struct food {
-	float ticks;
 	coor_t coor;
 } food_t;
 
 
 typedef struct game {
-	game_state_t game_state;
+	game_state_t state;
+	game_state_t next_state;
+	game_state_t prev_state;
 	food_t food;
 	snake_t snake;
-	float die_ticks;
-	float count_down_ticks;
+	int score;
+	float ticks;
 } game_t;
 
 
 typedef struct menu {
-	menu_index_t menu_index;
+	menu_index_t index;
 } menu_t;
 
 
 typedef struct skane {
-	skane_state_t skane_state;
+	skane_state_t state;
+	skane_state_t prev_state; 
+	skane_state_t next_state; 
 	menu_t menu;
 	game_t game;
 	int high_score;
