@@ -4,9 +4,21 @@
 //--
 
 
-bool game_step(const input_t* input, game_t* game)
+bool skane_step(const input_t* input, skane_t* skane)
 {
-	return false;
+	switch (skane->skane_state) {
+	case skane_state_menu: {
+		return false;
+	}
+	case skane_state_game: {
+		return false;
+	}
+	case skane_state_high_score: {
+		return false;
+	}
+	default: break;
+	}
+	assert(false);
 }
 
 

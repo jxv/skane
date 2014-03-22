@@ -6,7 +6,7 @@
 
 int main()
 {
-	game_t game;
+	skane_t skane;
 
 	// Initialize.
 	{
@@ -14,20 +14,20 @@ int main()
 			return EXIT_FAILURE;
 		}
 		
-		game.game_state = game_state_menu;
+		skane.skane_state = skane_state_menu;
 	}
 
 	// The main loop.
 	bool quit = false;
 	while (!quit) {
 		input_t input;
-		io_sync_input(&input);
+		quit |= io_sync_input(&input);
 
-		// Step game logic.
-		quit |= game_step(&input, &game);
+		// Step skane logic.
+		quit |= skane_step(&input, &skane);
 
 		// Draw.
-		io_draw_game(&game);
+		io_draw_skane(&skane);
 	}
 
 	// Quit.
