@@ -172,6 +172,12 @@ static bool skane_step_game(const input_t* input, game_t* game)
 
 		//
 
+		if (input->start == button_pressed) {
+			game->next_state = game_state_pause;
+		}
+
+		//
+
 		do {
 			int horz;
 			int vert;
@@ -219,9 +225,15 @@ static bool skane_step_game(const input_t* input, game_t* game)
 		break;
 	}
 	case game_state_pause: {
+		if (input->start == button_pressed) {
+			game->next_state = game_state_play;
+		}
 		break;
 	}
 	case game_state_game_over: {
+		if (input->start == button_pressed) {
+			return true;
+		}
 		break;
 	}
 	default: break;
