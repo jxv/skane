@@ -1,8 +1,8 @@
 #! /bin/bash
 
 rm -r build skane.opk
+make -f Makefile.gcw0 clean
 make -f Makefile.gcw0
-make -f Makefile
 mkdir build
 mkdir build/res
 cp skane build
