@@ -39,15 +39,20 @@ void game_init(game_t* game)
 	game->ticks = 1.0f;
 
 	game_init_food(&game->food);
-	game_init_snake(&game->snake, 0.9f);
+	game_init_snake(&game->snake, 0.5f);
 
 }
+
 
 static void game_init_food(food_t* food)
 {
-	food->coor.x = MAP_W - 1;
-	food->coor.y = MAP_H / 2;
+	food->coor = (coor_t) {
+		.x = MAP_W - 1,
+		.y = MAP_H / 2,
+	};
+	food->prev_coor = food->coor;
 }
+
 
 static void game_init_snake(snake_t* snake, float speed)
 {
@@ -65,13 +70,12 @@ static void game_init_snake(snake_t* snake, float speed)
 	}
 
 	snake->head = 0; 
-	snake->length = SNAKE_BODY_LEN; 
+	snake->length = SNAKE_BODY_LEN / 2; 
 	snake->dir = dir_right;
 
 	assert(speed > 0.0f);
 	assert(speed <= 1.0f);
 	snake->speed = speed;
-	snake->ai_state = ai_state_far;
 }
 
 
@@ -180,8 +184,80 @@ static bool snake_body_covers(const snake_t* snake, const coor_t* coor)
 }
 
 
-static void step_snake_ai(const food_t* food, const snake_t* snake)
+static dir_t step_snake_ai(const food_t* food, const snake_t* snake)
 {
+	const coor_t* head = &snake->body[snake->head];
+	
+	// Decide state.
+	ai_state_t state = ai_state_open;
+	do {
+		if ((int) food->coor.x == (int) head->x || (int) food->coor.y == (int) head->y) {
+			state = ai_state_on_target;
+			break;
+		}
+
+	} while (false);
+
+	// Decide movement direction.
+	switch (state) {
+	case ai_state_on_target: {
+		if ((int) food->coor.x == (int) head->x) {
+		  if ((int) food->coor.y > (int) head->y) {
+		    return dir_down;
+		  }
+		  return dir_up;
+		}
+
+		if ((int) food->coor.x > (int) head->x) {
+		  return dir_right;
+		}
+		return dir_left;
+	}
+	case ai_state_open: {
+		coor_t food_v = {
+			.x = food->coor.x - food->prev_coor.x,
+			.y = food->coor.y - food->prev_coor.y,
+		};
+
+		// The mahattan distance between the food and snake's head.
+		// Use the distance to create a weight from the food's predicted location and current location.
+		float dist = abs(food->coor.x - head->x) + abs(food->coor.y - head->y);
+		float inv_speed = 1.0f / snake->speed;
+		float rel_dist = dist * inv_speed;
+		
+		coor_t target = {
+			.x = food->coor.x + food_v.x * rel_dist,
+			.y = food->coor.y + food_v.y * rel_dist,
+		};
+
+		float food_dist = abs(food->coor.x - target.x) + abs(food->coor.y - target.y);
+		float head_dist = abs(head->x - target.x) + abs(head->y - target.y);
+
+		// Magic
+		float weight = dist / (dist + head_dist + food_dist + 0.0001f);
+
+		coor_t goal = {
+		    .x = food->coor.x * (1.0f - weight) + target.x * weight,
+		    .y = food->coor.y * (1.0f - weight) + target.y * weight,
+		};
+
+		// Given a goal position, choose the best direction.
+		if (abs(goal.x - head->x) > abs(goal.y - head->y)) {
+			if (goal.x > head->x) {
+				return dir_right;
+			}
+			return dir_left;
+		}
+		if (goal.y > head->y) {
+			return dir_down;
+		}
+		return dir_up;
+		
+		
+	}
+	default: break;
+	}
+	return dir_down;
 }
 
 
@@ -219,7 +295,18 @@ static bool skane_step_game(const input_t* input, game_t* game)
 		//
 
 		do {
-			step_snake_ai(food, snake);
+			const float GAME_TIME = 60.0f;
+
+			if (game->ticks > GAME_TIME) {
+				game->next_state = game_state_game_over;
+				return false;
+			}
+			snake->length = ((GAME_TIME - game->ticks) * SNAKE_BODY_LEN) / GAME_TIME;
+			snake->speed = 0.7f + 0.3f * (game->ticks / GAME_TIME);
+			
+			// 
+			
+			snake->dir = step_snake_ai(food, snake);
 			
 			float horz;
 			float vert;
@@ -230,8 +317,12 @@ static bool skane_step_game(const input_t* input, game_t* game)
 				.y = snake->body[snake->head].y + vert * snake->speed,
 			};
 
+			if (coor_collision(&snake->body[snake->head], &food->coor)) {
+				game->next_state = game_state_game_over;
+				break;
+			}
+
 			if (next_coor.x < 0 || next_coor.x >= MAP_W || next_coor.y < 0 || next_coor.y >= MAP_H ||
-			    coor_collision(&snake->body[snake->head], &food->coor) ||
 			    (snake_body_covers(snake, &next_coor) &&
 			     !coor_collision(&snake->body[snake->head], &next_coor))) {
 				break;
@@ -265,6 +356,7 @@ static bool skane_step_game(const input_t* input, game_t* game)
 				break;
 			}
 			
+			food->prev_coor = food->prev_coor;
 			food->coor = next_coor;
 		} while (false);
 		

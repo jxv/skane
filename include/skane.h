@@ -80,7 +80,7 @@ typedef enum ai_state
 {
 	ai_state_invalid = -1,
 	ai_state_on_target,
-	ai_state_far,
+	ai_state_open,
 	ai_state_near,
 	ai_state_partial_trap,
 	ai_state_ajar_trap,
@@ -101,7 +101,6 @@ typedef struct coor
 
 typedef struct snake
 {
-	ai_state_t ai_state;
 	dir_t dir;
 	int head;
 	int length;
@@ -112,6 +111,7 @@ typedef struct snake
 
 typedef struct food
 {
+	coor_t prev_coor;
 	coor_t coor;
 } food_t;
 

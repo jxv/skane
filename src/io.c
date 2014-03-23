@@ -228,7 +228,9 @@ static void io_draw_game_play(const game_t* game)
 			.w = 1,
 			.h = 1,
 		};
-		SDL_FillRect(screen, &rect, SDL_MapRGB(screen->format, 0xff, 0xff, 0xff));
+		// The fade has a linear range of [1.0f,0.3f).
+		float fade = (snake->length * 0.1f + (snake->length - len) * 0.9f) / snake->length;
+		SDL_FillRect(screen, &rect, SDL_MapRGB(screen->format, 0xff * fade, 0xff * fade, 0xff * fade));
 	}
 
 	//	
