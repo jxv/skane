@@ -9,7 +9,9 @@ CFLAGS += `$(SYSROOT)/usr/bin/sdl-config --cflags`
 
 INCLUDE := -I ./include
 
-LIB := `$(SYSROOT)/usr/bin/sdl-config --libs`
+LIB := -lc
+LIB += -lm
+LIB += `$(SYSROOT)/usr/bin/sdl-config --libs`
 LIB += -lSDL_image
 
 SRC := $(wildcard src/*.c)

@@ -223,10 +223,10 @@ static void io_draw_game_play(const game_t* game)
 			len < snake->length;
 			idx += 1 + SNAKE_BODY_LEN, idx %= SNAKE_BODY_LEN, len++) {
 		SDL_Rect rect = {
-			.x = snake->body[idx].x,
-			.y = snake->body[idx].y,
+			.x = (int) snake->body[idx].x,
+			.y = (int) snake->body[idx].y,
 			.w = 1,
-			.h = 1
+			.h = 1,
 		};
 		SDL_FillRect(screen, &rect, SDL_MapRGB(screen->format, 0xff, 0xff, 0xff));
 	}
@@ -234,10 +234,10 @@ static void io_draw_game_play(const game_t* game)
 	//	
 
 	SDL_Rect rect = {
-		.x = food->coor.x,
-		.y = food->coor.y,
+		.x = (int) food->coor.x,
+		.y = (int) food->coor.y,
 		.w = 1,
-		.h = 1
+		.h = 1,
 	};
 	SDL_FillRect(screen, &rect, SDL_MapRGB(screen->format, 0xff, 0x00, 0x00));
 }

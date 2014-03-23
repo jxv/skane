@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <assert.h>
+#include <math.h>
 
 
 //--
@@ -29,7 +30,7 @@ typedef enum dir
 	dir_right,
 	dir_up,
 	dir_down,
-	dir_limit
+	dir_limit,
 } dir_t;
 
 
@@ -40,7 +41,7 @@ typedef enum button
 	button_pressed,
 	button_held,
 	button_released,
-	button_limit
+	button_limit,
 } button_t;
 
 
@@ -50,7 +51,7 @@ typedef enum skane_state
 	skane_state_menu,
 	skane_state_game,
 	skane_state_high_score,
-	skane_state_limit
+	skane_state_limit,
 } skane_state_t;
 
 
@@ -60,7 +61,7 @@ typedef enum menu_index
 	menu_index_play,
 	menu_index_high_score,
 	menu_index_exit,
-	menu_index_limit
+	menu_index_limit,
 } menu_index_t;
 
 
@@ -71,8 +72,21 @@ typedef enum game_state
 	game_state_play,
 	game_state_pause,
 	game_state_game_over,
-	game_state_limit
+	game_state_limit,
 } game_state_t;
+
+
+typedef enum ai_state
+{
+	ai_state_invalid = -1,
+	ai_state_on_target,
+	ai_state_far,
+	ai_state_near,
+	ai_state_partial_trap,
+	ai_state_ajar_trap,
+	ai_state_full_trap,
+	ai_state_limit,
+} ai_state_t;
 
 
 //
@@ -80,16 +94,18 @@ typedef enum game_state
 
 typedef struct coor
 {
-	int x;
-	int y;
+	float x;
+	float y;
 } coor_t;
 
 
 typedef struct snake
 {
+	ai_state_t ai_state;
 	dir_t dir;
 	int head;
 	int length;
+	float speed;
 	coor_t body[SNAKE_BODY_LEN];
 } snake_t;
 
