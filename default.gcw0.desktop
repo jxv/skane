@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Skane
+Comment=Run!
+Exec=skane
+Terminal=false
+Type=Application
+StartupNotify=true
+Icon=icon
+Categories=games;
+
