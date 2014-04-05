@@ -32,7 +32,7 @@ static Uint32 food_color;
 static SDL_Surface* screen;
 
 static SDL_Surface* menu_img;
-static SDL_Surface* menu_index_img[menu_index_limit][2];
+static SDL_Surface* menu_index_img[MENU_INDEX_LIMIT][2];
 static SDL_Surface* high_score_img;
 static SDL_Surface* pause_img;
 static SDL_Surface* game_over_img;
@@ -91,12 +91,12 @@ bool io_init()
 
 		//
 
-		loaded &= io_load_img(RES_PATH "menu_play_false.png", &menu_index_img[menu_index_play][0]);
-		loaded &= io_load_img(RES_PATH "menu_play_true.png", &menu_index_img[menu_index_play][1]);
-		loaded &= io_load_img(RES_PATH "menu_high_score_false.png", &menu_index_img[menu_index_high_score][0]);
-		loaded &= io_load_img(RES_PATH "menu_high_score_true.png", &menu_index_img[menu_index_high_score][1]);
-		loaded &= io_load_img(RES_PATH "menu_exit_false.png", &menu_index_img[menu_index_exit][0]);
-		loaded &= io_load_img(RES_PATH "menu_exit_true.png", &menu_index_img[menu_index_exit][1]);
+		loaded &= io_load_img(RES_PATH "menu_play_false.png", &menu_index_img[MENU_INDEX_PLAY][0]);
+		loaded &= io_load_img(RES_PATH "menu_play_true.png", &menu_index_img[MENU_INDEX_PLAY][1]);
+		loaded &= io_load_img(RES_PATH "menu_high_score_false.png", &menu_index_img[MENU_INDEX_HIGH_SCORE][0]);
+		loaded &= io_load_img(RES_PATH "menu_high_score_true.png", &menu_index_img[MENU_INDEX_HIGH_SCORE][1]);
+		loaded &= io_load_img(RES_PATH "menu_exit_false.png", &menu_index_img[MENU_INDEX_EXIT][0]);
+		loaded &= io_load_img(RES_PATH "menu_exit_true.png", &menu_index_img[MENU_INDEX_EXIT][1]);
 
 		//
 
@@ -128,10 +128,10 @@ void io_quit()
 static button_t update_button(button_t button, bool touch)
 {
 	switch (button) {
-	case button_untouched: return touch ? button_pressed : button_untouched;
-	case button_pressed: return touch ? button_held : button_released;
-	case button_held: return touch ? button_held : button_released;
-	case button_released: return touch ? button_pressed : button_untouched;
+	case BUTTON_UNTOUCHED: return touch ? BUTTON_PRESSED : BUTTON_UNTOUCHED;
+	case BUTTON_PRESSED: return touch ? BUTTON_HELD : BUTTON_RELEASED;
+	case BUTTON_HELD: return touch ? BUTTON_HELD : BUTTON_RELEASED;
+	case BUTTON_RELEASED: return touch ? BUTTON_PRESSED : BUTTON_UNTOUCHED;
 	default: assert(false); break;
 	}
 }
@@ -156,7 +156,7 @@ bool io_sync_input(input_t* input)
 	const int a_idx = 1;
 	const int b_idx = 2;
 	bool touches[3] = { false, false, false };
-	bool dir_touches[dir_limit] = { false, false, false, false };
+	bool dir_touches[DIR_LIMIT] = { false, false, false, false };
 	const Uint8* key_state = SDL_GetKeyState(NULL);
 
 	//
@@ -165,10 +165,10 @@ bool io_sync_input(input_t* input)
 	touches[a_idx] = key_state[SDLK_LCTRL];
 	touches[b_idx] = key_state[SDLK_LALT];
 
-	dir_touches[dir_left] = key_state[SDLK_LEFT];
-	dir_touches[dir_right] = key_state[SDLK_RIGHT];
-	dir_touches[dir_up] = key_state[SDLK_UP];
-	dir_touches[dir_down] = key_state[SDLK_DOWN];
+	dir_touches[DIR_LEFT] = key_state[SDLK_LEFT];
+	dir_touches[DIR_RIGHT] = key_state[SDLK_RIGHT];
+	dir_touches[DIR_UP] = key_state[SDLK_UP];
+	dir_touches[DIR_DOWN] = key_state[SDLK_DOWN];
 
 	//
 
@@ -178,7 +178,7 @@ bool io_sync_input(input_t* input)
 	if (dir_touches[prev_dir]) {
 		dir_touch = true;
 	} else {
-		for (int i = 0; i < dir_limit; i++) {
+		for (int i = 0; i < DIR_LIMIT; i++) {
 			if (dir_touches[i]) {
 				input->dir = i;
 				dir_touch = true;
@@ -190,7 +190,7 @@ bool io_sync_input(input_t* input)
 	if (prev_dir == input->dir) {
 		input->dir_state = update_button(input->dir_state, dir_touch);
 	} else {
-		input->dir_state = button_pressed;
+		input->dir_state = BUTTON_PRESSED;
 	}
 
 	//
@@ -207,7 +207,7 @@ static void io_draw_menu(const menu_t* menu)
 {
 	SDL_BlitSurface(menu_img, NULL, screen, NULL);
 
-	for (int i = 0; i < menu_index_limit; i++) {
+	for (int i = 0; i < MENU_INDEX_LIMIT; i++) {
 		SDL_BlitSurface(menu_index_img[i][menu->index == i], NULL, screen, NULL);
 	}
 }
@@ -248,28 +248,23 @@ static void io_draw_game_play(const game_t* game)
 static void io_draw_game(const game_t* game)
 {
 	switch (game->state) {
-	case game_state_start: {
+	case GAME_STATE_START:
 		io_draw_game_play(game);
 		SDL_BlitSurface(ready_img, NULL, screen, NULL);
 		break;
-	}
-	case game_state_play: {
+	case GAME_STATE_PLAY:
 		io_draw_game_play(game);
-		if (game->ticks <= 1.0f) {
+		if (game->ticks <= 1.0f) 
 			SDL_BlitSurface(go_img, NULL, screen, NULL);
-		}
 		break;
-	}
-	case game_state_pause: {
+	case GAME_STATE_PAUSE:
 		io_draw_game_play(game);
 		SDL_BlitSurface(pause_img, NULL, screen, NULL);
 		break;
-	}
-	case game_state_game_over: {
+	case GAME_STATE_GAME_OVER:
 		io_draw_game_play(game);
 		SDL_BlitSurface(game_over_img, NULL, screen, NULL);
 		break;
-	}
 	default: assert(false); break;
 	}
 }
@@ -286,9 +281,9 @@ void io_draw_skane(const skane_t* skane)
 	SDL_FillRect(screen, NULL, 0);
 
 	switch (skane->state) {
-	case skane_state_menu: io_draw_menu(&skane->menu); break;
-	case skane_state_game: io_draw_game(&skane->game); break;
-	case skane_state_high_score: io_draw_high_score(skane->high_score); break;
+	case SKANE_STATE_MENU: io_draw_menu(&skane->menu); break;
+	case SKANE_STATE_GAME: io_draw_game(&skane->game); break;
+	case SKANE_STATE_HIGH_SCORE: io_draw_high_score(skane->high_score); break;
 	default: assert(false); break;
 	}
 

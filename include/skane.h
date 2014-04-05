@@ -25,67 +25,67 @@
 
 typedef enum dir
 {
-	dir_invalid = -1,
-	dir_left,
-	dir_right,
-	dir_up,
-	dir_down,
-	dir_limit,
+	DIR_INVALID = -1,
+	DIR_LEFT,
+	DIR_RIGHT,
+	DIR_UP,
+	DIR_DOWN,
+	DIR_LIMIT	
 } dir_t;
 
 
 typedef enum button
 {
-	button_invalid = -1,
-	button_untouched,
-	button_pressed,
-	button_held,
-	button_released,
-	button_limit,
+	BUTTON_INVALID = -1,
+	BUTTON_UNTOUCHED,
+	BUTTON_PRESSED,
+	BUTTON_HELD,
+	BUTTON_RELEASED,
+	BUTTON_LIMIT,
 } button_t;
 
 
 typedef enum skane_state
 {
-	skane_state_invalid = -1,
-	skane_state_menu,
-	skane_state_game,
-	skane_state_high_score,
-	skane_state_limit,
+	SKANE_STATE_INVALID = -1,
+	SKANE_STATE_MENU,
+	SKANE_STATE_GAME,
+	SKANE_STATE_HIGH_SCORE,
+	SKANE_STATE_LIMIT,
 } skane_state_t;
 
 
 typedef enum menu_index
 {
-	menu_index_invalid = -1,
-	menu_index_play,
-	menu_index_high_score,
-	menu_index_exit,
-	menu_index_limit,
+	MENU_INDEX_INVALID = -1,
+	MENU_INDEX_PLAY,
+	MENU_INDEX_HIGH_SCORE,
+	MENU_INDEX_EXIT,
+	MENU_INDEX_LIMIT,
 } menu_index_t;
 
 
 typedef enum game_state
 {
-	game_state_invalid = -1,
-	game_state_start,
-	game_state_play,
-	game_state_pause,
-	game_state_game_over,
-	game_state_limit,
+	GAME_STATE_INVALID = -1,
+	GAME_STATE_START,
+	GAME_STATE_PLAY,
+	GAME_STATE_PAUSE,
+	GAME_STATE_GAME_OVER,
+	GAME_STATE_LIMIT,
 } game_state_t;
 
 
 typedef enum ai_state
 {
-	ai_state_invalid = -1,
-	ai_state_on_target,
-	ai_state_open,
-	ai_state_near,
-	ai_state_partial_trap,
-	ai_state_ajar_trap,
-	ai_state_full_trap,
-	ai_state_limit,
+	AI_STATE_INVALID = -1,
+	AI_STATE_ON_TARGET,
+	AI_STATE_OPEN,
+	AI_STATE_NEAR,
+	AI_STATE_PARTIAL_TRAP,
+	AI_STATE_AJAR_TRAP,
+	AI_STATE_FULL_TRAP,
+	AI_STATE_LIMIT
 } ai_state_t;
 
 

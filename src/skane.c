@@ -15,11 +15,11 @@ float curtailf(float num)
 
 void input_init(input_t* input)
 {
-	input->dir = dir_up;
-	input->dir_state = button_untouched;
-	input->start = button_untouched;
-	input->a = button_untouched;
-	input->b = button_untouched;
+	input->dir = DIR_UP;
+	input->dir_state = BUTTON_UNTOUCHED;
+	input->start = BUTTON_UNTOUCHED;
+	input->a = BUTTON_UNTOUCHED;
+	input->b = BUTTON_UNTOUCHED;
 }
 
 
@@ -32,9 +32,9 @@ static void game_init_snake(snake_t*, float speed);
 
 void game_init(game_t* game)
 {
-	game->state = game_state_start;
-	game->next_state = game_state_start;
-	game->prev_state = game_state_start;
+	game->state = GAME_STATE_START;
+	game->next_state = GAME_STATE_START;
+	game->prev_state = GAME_STATE_START;
 	game->score = 0;
 	game->ticks = 1.0f;
 
@@ -71,7 +71,7 @@ static void game_init_snake(snake_t* snake, float speed)
 
 	snake->head = 0; 
 	snake->length = SNAKE_BODY_LEN / 2; 
-	snake->dir = dir_right;
+	snake->dir = DIR_RIGHT;
 
 	assert(speed > 0.0f);
 	assert(speed <= 1.0f);
@@ -84,10 +84,10 @@ static void game_init_snake(snake_t* snake, float speed)
 
 void skane_init(skane_t* skane)
 {
-	skane->prev_state = skane_state_menu;
-	skane->state = skane_state_menu;
-	skane->next_state = skane_state_menu;
-	skane->menu.index = menu_index_play;
+	skane->prev_state = SKANE_STATE_MENU;
+	skane->state = SKANE_STATE_MENU;
+	skane->next_state = SKANE_STATE_MENU;
+	skane->menu.index = MENU_INDEX_PLAY; 
 }
 
 
@@ -102,31 +102,31 @@ bool skane_step(const input_t* input, skane_t* skane)
 
 	// Find next state.
 	switch (skane->state) {
-	case skane_state_menu: {
+	case SKANE_STATE_MENU: {
 		menu_t* menu = &skane->menu;
-		int move = menu_index_limit;
+		int move = MENU_INDEX_LIMIT;
 
-		if (input->dir_state == button_pressed) {
+		if (input->dir_state == BUTTON_PRESSED) {
 			switch (input->dir) {
-			case dir_up: move--; break;
-			case dir_down: move++; break;
+			case DIR_UP: move--; break;
+			case DIR_DOWN: move++; break;
 			default: break;
 			}
 		}
 		menu->index += move;
-		menu->index %= menu_index_limit;
+		menu->index %= MENU_INDEX_LIMIT;
 
 		//
 
-		if (input->a == button_pressed) {
+		if (input->a == BUTTON_PRESSED) {
 			switch (menu->index) {
-			case menu_index_play: {
-				skane->next_state = skane_state_game;
+			case MENU_INDEX_PLAY: {
+				skane->next_state = SKANE_STATE_GAME;
 				game_init(&skane->game);
 				break;
 			}
-			case menu_index_high_score: skane->next_state = skane_state_high_score; break;
-			case menu_index_exit: return true;
+			case MENU_INDEX_HIGH_SCORE: skane->next_state = SKANE_STATE_HIGH_SCORE; break;
+			case MENU_INDEX_EXIT: return true;
 			default: assert(false); break;
 			}
 		}
@@ -135,18 +135,18 @@ bool skane_step(const input_t* input, skane_t* skane)
 
 		return false;
 	}
-	case skane_state_game: {
+	case SKANE_STATE_GAME: {
 		if (skane_step_game(input, &skane->game)) {
-			skane->next_state = skane_state_menu;
+			skane->next_state = SKANE_STATE_MENU;
 		}
 
 		//
 
 		return false;
 	}
-	case skane_state_high_score: {
-		if (input->b == button_pressed || input->a == button_pressed || input->start == button_pressed) {
-			skane->next_state = skane_state_menu;
+	case SKANE_STATE_HIGH_SCORE: {
+		if (input->b == BUTTON_PRESSED || input->a == BUTTON_PRESSED || input->start == BUTTON_PRESSED) {
+			skane->next_state = SKANE_STATE_MENU;
 		}
 
 		//
@@ -160,8 +160,8 @@ bool skane_step(const input_t* input, skane_t* skane)
 
 static void step_dir(dir_t dir, float* horz, float* vert)
 {
-	*horz = dir == dir_left ? -1 : (dir == dir_right ? 1 : 0);
-	*vert = dir == dir_up ? -1 : (dir == dir_down ? 1 : 0);
+	*horz = dir == DIR_LEFT ? -1 : (dir == DIR_RIGHT ? 1 : 0);
+	*vert = dir == DIR_UP ? -1 : (dir == DIR_DOWN ? 1 : 0);
 }
 
 
@@ -189,10 +189,10 @@ static dir_t step_snake_ai(const food_t* food, const snake_t* snake)
 	const coor_t* head = &snake->body[snake->head];
 	
 	// Decide state.
-	ai_state_t state = ai_state_open;
+	ai_state_t state = AI_STATE_OPEN;
 	do {
 		if ((int) food->coor.x == (int) head->x || (int) food->coor.y == (int) head->y) {
-			state = ai_state_on_target;
+			state = AI_STATE_ON_TARGET;
 			break;
 		}
 
@@ -200,20 +200,20 @@ static dir_t step_snake_ai(const food_t* food, const snake_t* snake)
 
 	// Decide movement direction.
 	switch (state) {
-	case ai_state_on_target: {
+	case AI_STATE_ON_TARGET: {
 		if ((int) food->coor.x == (int) head->x) {
 		  if ((int) food->coor.y > (int) head->y) {
-		    return dir_down;
+		    return DIR_DOWN;
 		  }
-		  return dir_up;
+		  return DIR_UP;
 		}
 
 		if ((int) food->coor.x > (int) head->x) {
-		  return dir_right;
+		  return DIR_RIGHT;
 		}
-		return dir_left;
+		return DIR_LEFT;
 	}
-	case ai_state_open: {
+	case AI_STATE_OPEN: {
 		coor_t food_v = {
 			.x = food->coor.x - food->prev_coor.x,
 			.y = food->coor.y - food->prev_coor.y,
@@ -244,20 +244,20 @@ static dir_t step_snake_ai(const food_t* food, const snake_t* snake)
 		// Given a goal position, choose the best direction.
 		if (abs(goal.x - head->x) > abs(goal.y - head->y)) {
 			if (goal.x > head->x) {
-				return dir_right;
+				return DIR_RIGHT;
 			}
-			return dir_left;
+			return DIR_LEFT;
 		}
 		if (goal.y > head->y) {
-			return dir_down;
+			return DIR_DOWN;
 		}
-		return dir_up;
+		return DIR_UP;
 		
 		
 	}
 	default: break;
 	}
-	return dir_down;
+	return DIR_DOWN;
 }
 
 
@@ -274,22 +274,22 @@ static bool skane_step_game(const input_t* input, game_t* game)
 	//
 
 	switch (game->state) {
-	case game_state_start: {
+	case GAME_STATE_START: {
 		if (game->ticks > 0.0f) {
 			game->ticks -= SPF;
 		} else {
-			game->next_state = game_state_play;
+			game->next_state = GAME_STATE_PLAY;
 			game->ticks = 0.0f;
 		}
 		break;
 	}
-	case game_state_play: {
+	case GAME_STATE_PLAY: {
 		game->ticks += SPF;
 
 		//
 
-		if (input->start == button_pressed) {
-			game->next_state = game_state_pause;
+		if (input->start == BUTTON_PRESSED) {
+			game->next_state = GAME_STATE_PAUSE;
 		}
 
 		//
@@ -298,7 +298,7 @@ static bool skane_step_game(const input_t* input, game_t* game)
 			const float GAME_TIME = 60.0f;
 
 			if (game->ticks > GAME_TIME) {
-				game->next_state = game_state_game_over;
+				game->next_state = GAME_STATE_GAME_OVER;
 				return false;
 			}
 			snake->length = ((GAME_TIME - game->ticks) * SNAKE_BODY_LEN) / GAME_TIME;
@@ -318,7 +318,7 @@ static bool skane_step_game(const input_t* input, game_t* game)
 			};
 
 			if (coor_collision(&snake->body[snake->head], &food->coor)) {
-				game->next_state = game_state_game_over;
+				game->next_state = GAME_STATE_GAME_OVER;
 				break;
 			}
 
@@ -338,7 +338,7 @@ static bool skane_step_game(const input_t* input, game_t* game)
 		//
 
 		do {
-			if (!(input->dir_state == button_held || input->dir_state == button_pressed)) {
+			if (!(input->dir_state == BUTTON_HELD || input->dir_state == BUTTON_PRESSED)) {
 				break;
 			}
 
@@ -362,14 +362,14 @@ static bool skane_step_game(const input_t* input, game_t* game)
 		
 		break;
 	}
-	case game_state_pause: {
-		if (input->start == button_pressed) {
-			game->next_state = game_state_play;
+	case GAME_STATE_PAUSE: {
+		if (input->start == BUTTON_PRESSED) {
+			game->next_state = GAME_STATE_PLAY;
 		}
 		break;
 	}
-	case game_state_game_over: {
-		if (input->start == button_pressed) {
+	case GAME_STATE_GAME_OVER: {
+		if (input->start == BUTTON_PRESSED) {
 			return true;
 		}
 		break;
